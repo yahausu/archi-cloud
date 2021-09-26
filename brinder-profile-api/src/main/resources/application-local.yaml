@@ -1,0 +1,9 @@
+server:
+  port: 9090
+keycloak:
+  enabled: true
+  realm: tindeer
+  auth-server-url: http://localhost:8080/auth
+  ssl-required: external
+  resource: tindeer
+  principal-attribute: preferred_username
