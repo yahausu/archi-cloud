@@ -15,6 +15,7 @@ import org.gso.brinder.profile.model.ProfileModel;
 import org.gso.brinder.profile.service.ProfileService;
 import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.keycloak.representations.AccessToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +40,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping(
         value = ProfileController.PATH,
-        consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
 )
 @RequiredArgsConstructor
@@ -51,7 +51,7 @@ public class ProfileController {
     private final ProfileService profileService;
     private QueryConversionPipeline pipeline = QueryConversionPipeline.defaultPipeline();
 
-    @PostMapping()
+    @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<ProfileDto> createProfile(@RequestBody ProfileDto profileDto) {
         ProfileDto createdProdile = profileService.createProfile(profileDto.toModel()).toDto();
         return ResponseEntity
@@ -68,7 +68,7 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.getProfile(profileId).toDto());
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(path = "/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<ProfileDto> updateProfile(@PathVariable @NonNull String profileId,
                                                     @RequestBody @NonNull ProfileDto profileDto) {
         profileDto.setId(profileId);
@@ -101,6 +101,7 @@ public class ProfileController {
     public ResponseEntity getCurrentUserProfile(Principal principal) {
         KeycloakAuthenticationToken kp = (KeycloakAuthenticationToken) principal;
         SimpleKeycloakAccount simpleKeycloakAccount = (SimpleKeycloakAccount) kp.getDetails();
+        AccessToken accessToken = simpleKeycloakAccount.getKeycloakSecurityContext().getToken();
         return ResponseEntity.ok(simpleKeycloakAccount.getKeycloakSecurityContext().getToken());
     }
 
