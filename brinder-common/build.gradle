@@ -20,6 +20,11 @@ configurations {
     }
 }
 
+bootBuildImage {
+    docker {
+        privileged = true
+    }
+}
 bootJar {
     enabled = false
 }
