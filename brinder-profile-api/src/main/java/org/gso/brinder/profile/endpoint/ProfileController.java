@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -95,7 +96,7 @@ public class ProfileController {
     }
 
     @GetMapping("/current")
-    public ResponseEntity getCurrentUserProfile(Principal principal) {
+    public ResponseEntity getCurrentUserProfile(JwtAuthenticationToken principal) {
         return ResponseEntity.ok(principal);
     }
 
