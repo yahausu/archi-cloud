@@ -31,7 +31,7 @@ public class SecurityConfiguration {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:8888"));
         configuration.setAllowedMethods(Arrays.asList("GET","POST", "DELETE", "PATCH", "PUT"));
-        configuration.setAllowedHeaders(Arrays.asList("authorization"));
+        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -43,7 +43,7 @@ public class SecurityConfiguration {
         http.cors(withDefaults());
         http.authorizeRequests()
                 .antMatchers("/api/v1/*")
-                .hasRole("USER")
+                .authenticated()
                 .anyRequest()
                 .permitAll();
         http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
