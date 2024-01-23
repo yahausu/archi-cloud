@@ -6,6 +6,7 @@ import org.gso.brinder.common.exception.BadRequestException;
 import org.gso.brinder.common.exception.NotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -20,22 +21,20 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestControllerAdvice extends ResponseEntityExceptionHandler {
 
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        ErrorMessage errorMessage =  ErrorMessage.builder().message(ex.getMessage()).code(BadRequestException.BAD_REQUEST_CODE).build();
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ErrorMessage errorMessage = ErrorMessage.builder().message(ex.getMessage()).code(BadRequestException.BAD_REQUEST_CODE).build();
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
     @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        ErrorMessage errorMessage =  ErrorMessage.builder().message(ex.getMessage()).code(BadRequestException.BAD_REQUEST_CODE).build();
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ErrorMessage errorMessage = ErrorMessage.builder().message(ex.getMessage()).code(BadRequestException.BAD_REQUEST_CODE).build();
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
     @Override
-    protected ResponseEntity<Object> handleMissingServletRequestParameter(
-            MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        ErrorMessage errorMessage =  ErrorMessage.builder().message(ex.getMessage()).code(BadRequestException.BAD_REQUEST_CODE).build();
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ErrorMessage errorMessage = ErrorMessage.builder().message(ex.getMessage()).code(BadRequestException.BAD_REQUEST_CODE).build();
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
