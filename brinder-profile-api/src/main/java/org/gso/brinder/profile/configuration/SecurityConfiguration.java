@@ -2,6 +2,7 @@ package org.gso.brinder.profile.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
+@Profile("security")
 public class SecurityConfiguration {
 
     @Bean
@@ -42,11 +44,12 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(withDefaults());
         http.authorizeRequests()
-                .antMatchers("/api/v1/*")
+                .requestMatchers("/api/v1/*")
                 .authenticated()
                 .anyRequest()
                 .permitAll();
-        http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+        http.oauth2ResourceServer((oauth2) -> oauth2
+                .jwt(Customizer.withDefaults()));
         return http.build();
     }
 }
