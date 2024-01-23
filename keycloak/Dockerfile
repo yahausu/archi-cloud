@@ -1,4 +1,4 @@
-FROM quay.io/keycloak/keycloak:20.0 as builder
+FROM quay.io/keycloak/keycloak:23.0.4 as builder
 
 ENV KC_HEALTH_ENABLED=true
 ENV KC_METRICS_ENABLED=false
@@ -10,7 +10,7 @@ RUN /opt/keycloak/bin/kc.sh import --file /opt/keycloak/data/import/tindeer-real
 
 RUN /opt/keycloak/bin/kc.sh build
 
-FROM quay.io/keycloak/keycloak:20.0
+FROM quay.io/keycloak/keycloak:23.0.4
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 WORKDIR /opt/keycloak
 
