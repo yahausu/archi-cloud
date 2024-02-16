@@ -45,6 +45,7 @@ public class ProfileDto {
                 .age(this.age)
                 .firstName(this.firstName)
                 .lastName(this.lastName)
+                .mail(this.mail)
                 .build();
     }
 }

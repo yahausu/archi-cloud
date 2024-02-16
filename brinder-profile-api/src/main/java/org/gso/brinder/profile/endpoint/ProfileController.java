@@ -33,7 +33,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
+import java.time.LocalDateTime;
+import java.util.List;
+import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping(
@@ -49,31 +51,46 @@ public class ProfileController {
     private final ProfileService profileService;
     private QueryConversionPipeline pipeline = QueryConversionPipeline.defaultPipeline();
 
-    @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE })
-    public ResponseEntity<ProfileDto> createProfile(@RequestBody ProfileDto profileDto) {
-        ProfileDto createdProdile = profileService.createProfile(profileDto.toModel()).toDto();
+    @PostMapping("/sign_in")
+    public ResponseEntity<ProfileDto> createProfile(JwtAuthenticationToken principal) {
+
+        ProfileDto profileDto = new ProfileDto();
+        profileDto.setId(principal.getToken().getId());
+        profileDto.setUserId(principal.getTokenAttributes().get("sub").toString());
+        profileDto.setFirstName(principal.getTokenAttributes().get("given_name").toString());
+        profileDto.setLastName(principal.getTokenAttributes().get("family_name").toString());
+        profileDto.setMail(principal.getTokenAttributes().get("email").toString());
+
+        LocalDateTime created = LocalDateTime.now();
+        profileDto.setCreated(created);
+        profileDto.setModified(created);
+
+
+        profileDto.setAge(Integer.parseInt(principal.getTokenAttributes().get("age").toString()));
+
+        ProfileDto createdProfile = profileService.createProfile(profileDto.toModel()).toDto()
         return ResponseEntity
                 .created(
                         ServletUriComponentsBuilder.fromCurrentContextPath()
-                                .path(createdProdile.getId())
+                                .path(createdProfile.getId())
                                 .build()
                                 .toUri()
-                ).body(createdProdile);
+                ).body(createdProfile);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProfileDto> getProfile(@PathVariable("id") @NonNull String profileId) {
-        return ResponseEntity.ok(profileService.getProfile(profileId).toDto());
+    @GetMapping("/myprofile")
+    public ResponseEntity<ProfileDto> getProfile(JwtAuthenticationToken principal) {
+        return ResponseEntity.ok(profileService.getProfile(principal.getToken().getId()).toDto());
     }
 
-    @PutMapping(path = "/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE })
-    public ResponseEntity<ProfileDto> updateProfile(@PathVariable @NonNull String profileId,
+    @PutMapping(path = "/update", consumes = { MediaType.APPLICATION_JSON_VALUE })
+    public ResponseEntity<ProfileDto> updateProfile(JwtAuthenticationToken principal,
                                                     @RequestBody @NonNull ProfileDto profileDto) {
-        profileDto.setId(profileId);
+        profileDto.setId(principal.getToken().getId());
         return ResponseEntity.ok(profileService.updateProfile(profileDto.toModel()).toDto());
     }
 
-    @GetMapping
+    @GetMapping("/profile_search")
     public ResponseEntity<PageDto<ProfileDto>> searchProfile(@RequestParam(required = false) String query,
                                                              @PageableDefault(size = 20) Pageable pageable) {
         Pageable checkedPageable  = checkPageSize(pageable);
@@ -85,7 +102,7 @@ public class ProfileController {
                 .body(pageResults);
     }
 
-    @GetMapping(params = "mail")
+    @GetMapping(path = "/profile_search", params = "mail")
     public ResponseEntity<PageDto<ProfileDto>> searchByMail(@RequestParam String mail,
                                                              @PageableDefault(size = 20) Pageable pageable) {
         Page<ProfileModel> results = profileService.searchByMail(mail, pageable);
